@@ -6,7 +6,8 @@ import Stripe from 'stripe'
 export const getStripe = () => {
   const key = process.env.STRIPE_SECRET_KEY
   if (!key) return null
-  return new Stripe(key, { apiVersion: '2024-06-20' })
+  // Use the SDK's bundled API version to satisfy types across releases
+  return new Stripe(key)
 }
 
 
