@@ -743,73 +743,111 @@ export default function GalleryPage() {
       <Toaster richColors position="top-center" />
 
       <div className="container mx-auto p-4 md:p-5 space-y-4">
-        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 -mx-4 md:-mx-5 px-4 md:px-5 py-2 flex flex-wrap items-center justify-between gap-2">
-
-          {/* Split button group: main action + caret, styled like example */}
-          <div className="ml-2 flex items-center gap-2 flex-wrap">
-            {/* Restore icon-only button moved to the left */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="p-2 h-9 w-9"
-              title="Restore last folder"
-              disabled={!hasPersistedFolder}
-              onClick={handleRestorePersistentFolder}
-            >
-              ←
-            </Button>
-            <div className="group/buttons relative flex items-stretch rounded-md overflow-hidden border bg-primary text-primary-foreground">
-              <div data-slot="popover-anchor"></div>
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 -mx-4 md:-mx-5 px-4 md:px-5 py-2 flex flex-col gap-2">
+          {/* Row 1 */}
+          <div className="w-full flex flex-wrap items-center justify-between gap-2">
+            <div className="ml-2 flex items-center gap-2 flex-wrap">
               <Button
+                variant="outline"
                 size="sm"
-                variant="default"
-                onClick={handleFolderSelectClick}
-                disabled={isLoading}
-                title="Browse a local folder"
-                className="gap-1.5 px-3 has-[>svg]:px-2.5 h-9 shadow-none rounded-none"
+                className="p-2 h-9 w-9"
+                title="Restore last folder"
+                disabled={!hasPersistedFolder}
+                onClick={handleRestorePersistentFolder}
               >
-                <FolderOpen />
-                {isLoading ? "Processing..." : "Choose Folder"}
+                ←
               </Button>
-              {/* vertical separator between main and caret */}
-              <div aria-hidden className="bg-primary-foreground/25 w-px" />
-              {/* caret (desktop) */}
-              <Select
-              onValueChange={async (value) => {
-                if (value === "persistent") {
-                  await handlePickPersistentFolder();
-                  return;
-                }
-                if (value.startsWith("recent:")) {
-                  const idx = Number(value.split(":")[1]);
-                  try {
-                    const list = (await idbGet<any>("recentDirs")) || [];
-                    const chosen = list[idx];
-                    if (chosen?.handle) await loadFromDirectoryHandle(chosen.handle);
-                  } catch {}
-                }
-              }}
-            >
-                <SelectTrigger
+              <div className="group/buttons relative flex items-stretch rounded-md overflow-hidden border bg-primary text-primary-foreground">
+                <div data-slot="popover-anchor"></div>
+                <Button
                   size="sm"
-                  className="items-center justify-center hidden sm:flex peer h-9 w-9 shadow-none border-0 rounded-none bg-primary text-primary-foreground"
-                  title="More options"
-                />
-                <SelectContent>
-                  <div className="px-2 py-1 text-xs text-muted-foreground">Options</div>
-                  <SelectItem value="persistent">Use persistent folder</SelectItem>
-                  <div className="px-2 py-1 text-xs text-muted-foreground">Recent</div>
-                  {recentDirs.length ? (
-                    recentDirs.map((d, i) => (
-                      <SelectItem value={`recent:${i}`} key={`${d.name}-${i}`}>
-                        {d.name}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="recent:-1" disabled>No recent folders</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+                  variant="default"
+                  onClick={handleFolderSelectClick}
+                  disabled={isLoading}
+                  title="Browse a local folder"
+                  className="gap-1.5 px-3 has-[>svg]:px-2.5 h-9 shadow-none rounded-none"
+                >
+                  <FolderOpen />
+                  {isLoading ? "Processing..." : "Choose Folder"}
+                </Button>
+                <div aria-hidden className="bg-primary-foreground/25 w-px" />
+                <Select
+                  onValueChange={async (value) => {
+                    if (value === "persistent") {
+                      await handlePickPersistentFolder();
+                      return;
+                    }
+                    if (value.startsWith("recent:")) {
+                      const idx = Number(value.split(":")[1]);
+                      try {
+                        const list = (await idbGet<any>("recentDirs")) || [];
+                        const chosen = list[idx];
+                        if (chosen?.handle) await loadFromDirectoryHandle(chosen.handle);
+                      } catch {}
+                    }
+                  }}
+                >
+                  <SelectTrigger
+                    size="sm"
+                    className="items-center justify-center hidden sm:flex peer h-9 w-9 shadow-none border-0 rounded-none bg-primary text-primary-foreground"
+                    title="More options"
+                  />
+                  <SelectContent>
+                    <div className="px-2 py-1 text-xs text-muted-foreground">Options</div>
+                    <SelectItem value="persistent">Use persistent folder</SelectItem>
+                    <div className="px-2 py-1 text-xs text-muted-foreground">Recent</div>
+                    {recentDirs.length ? (
+                      recentDirs.map((d, i) => (
+                        <SelectItem value={`recent:${i}`} key={`${d.name}-${i}`}>
+                          {d.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="recent:-1" disabled>No recent folders</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9">
+                    <HelpCircle className="h-4 w-4 mr-1" /> Shortcuts
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Keyboard Shortcuts</DialogTitle>
+                    <DialogDescription>Speed up your culling.</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="text-muted-foreground">Rate</div><div>0–5</div>
+                    <div className="text-muted-foreground">Pick</div><div>P</div>
+                    <div className="text-muted-foreground">Reject</div><div>X</div>
+                    <div className="text-muted-foreground">Clear Flag</div><div>U</div>
+                    <div className="text-muted-foreground">Open Viewer</div><div>Double‑click</div>
+                    <div className="text-muted-foreground">Select/Deselect</div><div>Click</div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              <textarea
+                readOnly
+                title="You can copy the list of selected photos"
+                className="w-[240px] md:w-[320px] h-9 rounded-md border px-2 text-xs font-mono bg-background whitespace-pre overflow-auto resize-none text-center leading-9 placeholder:text-center"
+                value={selectedPhotoList.map((n, i) => `${i + 1}. ${n}`).join("\n")}
+                placeholder={selectedPhotoList.length ? "" : "Selected photos appear here"}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9"
+                title="Copy selected photo names"
+                onClick={handleCopyToClipboard}
+                disabled={selectedPhotoList.length === 0 || isCopying}
+              >
+                {isCopying ? "Copied" : "Copy"}
+              </Button>
             </div>
           </div>
           <input
@@ -823,60 +861,53 @@ export default function GalleryPage() {
             accept="image/png, image/jpeg, image/gif, image/webp"
           />
           {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
-          {/* Toolbar */}
-          <div className="ml-auto flex items-center gap-2 flex-wrap">
+          {/* Row 2 */}
+          <div className="w-full flex flex-wrap items-center justify-between gap-2">
+            <div className="hidden lg:flex items-center gap-2 rounded-md border bg-muted/30 px-2 py-1 text-xs">
+              <span className="text-muted-foreground">Selection</span>
+              <Button size="sm" variant="outline" className="h-8" onClick={() => setActiveFlag("pick")}><Flag className="h-3.5 w-3.5 mr-1" />Pick</Button>
+              <Button size="sm" variant="outline" className="h-8" onClick={() => setActiveFlag("reject")}><XIcon className="h-3.5 w-3.5 mr-1" />Reject</Button>
+              <span className="text-muted-foreground">Rating</span>
+              {[0,1,2,3,4,5].map((r) => (
+                <Button key={r} size="sm" variant="outline" className="h-8 px-2" onClick={() => setActiveRating(r)}>
+                  {r}
+                </Button>
+              ))}
+            </div>
             <Button variant="outline" size="sm" className="h-9" onClick={() => setShowFilters((s) => !s)}>
               <SlidersHorizontal className="h-4 w-4 mr-1" /> {showFilters ? "Hide" : "Show"} Filters
             </Button>
-            <Dialog>
-              <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9">
-                  <HelpCircle className="h-4 w-4 mr-1" /> Shortcuts
-                </Button>
-              </DialogTrigger>
-            <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Keyboard Shortcuts</DialogTitle>
-                  <DialogDescription>Speed up your culling.</DialogDescription>
-                </DialogHeader>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="text-muted-foreground">Rate</div><div>0–5</div>
-                  <div className="text-muted-foreground">Pick</div><div>P</div>
-                  <div className="text-muted-foreground">Reject</div><div>X</div>
-                  <div className="text-muted-foreground">Clear Flag</div><div>U</div>
-                  <div className="text-muted-foreground">Open Viewer</div><div>Double‑click</div>
-                  <div className="text-muted-foreground">Select/Deselect</div><div>Click</div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Button
-              variant="default"
-              size="sm"
-              className="h-9"
-              disabled={selectedPhotos.size !== 2}
-              onClick={openCompareIfTwoSelected}
-              title={selectedPhotos.size === 2 ? "Compare selected" : "Select exactly 2 photos to compare"}
-            >
-              <CopyCheck className="h-4 w-4 mr-1" /> Compare {selectedPhotos.size === 2 ? "2" : ""}
-            </Button>
-            {/* Selected list formatted textarea + copy */}
-            <textarea
-              readOnly
-              title="You can copy the list of selected photos"
-              className="w-[240px] md:w-[320px] h-9 rounded-md border px-2 py-1 text-xs font-mono bg-background whitespace-pre overflow-auto resize-none"
-              value={selectedPhotoList.map((n, i) => `${i + 1}. ${n}`).join("\n")}
-              placeholder={selectedPhotoList.length ? "" : "Selected photos appear here"}
-            />
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9"
-              title="You can copy the list of selected photos"
-              onClick={handleCopyToClipboard}
-              disabled={selectedPhotoList.length === 0 || isCopying}
-            >
-              {isCopying ? "Copied" : "Copy"}
-            </Button>
+          </div>
+          {/* Row 3 */}
+          <div className="w-full flex items-center gap-3 pt-2 text-xs">
+            <div className="flex items-center gap-2 rounded-md border bg-muted/30 px-3 py-2">
+              <span className="text-muted-foreground">Min Rating</span>
+              <Select value={String(minRatingFilter)} onValueChange={(v) => setMinRatingFilter(parseInt(v, 10))}>
+                <SelectTrigger size="sm" className="w-[110px] justify-center"><SelectValue placeholder="0" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">0+</SelectItem>
+                  <SelectItem value="1">1+</SelectItem>
+                  <SelectItem value="2">2+</SelectItem>
+                  <SelectItem value="3">3+</SelectItem>
+                  <SelectItem value="4">4+</SelectItem>
+                  <SelectItem value="5">5</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="h-4 w-px bg-border mx-2" />
+              <span className="text-muted-foreground">Flag</span>
+              <Select value={flagFilter} onValueChange={(v) => setFlagFilter(v as typeof flagFilter)}>
+                <SelectTrigger size="sm" className="w-[140px] justify-center"><SelectValue placeholder="All" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="pick">Pick</SelectItem>
+                  <SelectItem value="reject">Reject</SelectItem>
+                  <SelectItem value="unflagged">Unflagged</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button size="sm" variant="outline" className="h-8 ml-2" onClick={() => { setHighlightedPhotos(new Set()); setSelectedPhotos(new Set()); setMinRatingFilter(0); setFlagFilter("all"); }}>
+                Clear
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -890,54 +921,7 @@ export default function GalleryPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Quick actions for highlighted photos */}
-              <div className="mb-3 flex flex-wrap items-center gap-2 text-xs p-2 -mx-2 rounded">
-                <div className="flex items-center gap-1">
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => setActiveFlag("pick")}><Flag className="h-3.5 w-3.5 mr-1" />Pick</Button>
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => setActiveFlag("reject")}><XIcon className="h-3.5 w-3.5 mr-1" />Reject</Button>
-                  <Button size="sm" variant="outline" className="h-8" onClick={() => setActiveFlag("none")}>Clear</Button>
-                </div>
-                <div className="ml-2 flex items-center gap-1">
-                  <span className="text-muted-foreground">Rating</span>
-                  {[0,1,2,3,4,5].map((r) => (
-                    <Button key={r} size="sm" variant="outline" className="h-8" onClick={() => setActiveRating(r)}>
-                      <Star className="h-3.5 w-3.5 mr-1" /> {r}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Filters */}
-              {showFilters && (
-              <div className="mb-4 flex flex-wrap items-center gap-3 rounded border bg-muted/20 p-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Min Rating</span>
-                  <Select value={String(minRatingFilter)} onValueChange={(v) => setMinRatingFilter(parseInt(v, 10))}>
-                    <SelectTrigger size="sm" className="w-[110px]"><SelectValue placeholder="0" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">0+</SelectItem>
-                      <SelectItem value="1">1+</SelectItem>
-                      <SelectItem value="2">2+</SelectItem>
-                      <SelectItem value="3">3+</SelectItem>
-                      <SelectItem value="4">4+</SelectItem>
-                      <SelectItem value="5">5</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Flag</span>
-                  <Select value={flagFilter} onValueChange={(v) => setFlagFilter(v as typeof flagFilter)}>
-                    <SelectTrigger size="sm" className="w-[140px]"><SelectValue placeholder="All" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="pick">Pick</SelectItem>
-                      <SelectItem value="reject">Reject</SelectItem>
-                      <SelectItem value="unflagged">Unflagged</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              )}
+              {/* Removed duplicate inline filters; filters now live in sticky header (row 2) */}
               <InfiniteScroll
                 dataLength={visiblePhotos.length}
                 next={loadMorePhotos}
@@ -948,7 +932,7 @@ export default function GalleryPage() {
                   </p>
                 }
                 endMessage={null}
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 py-2 md:py-3"
               >
                 {visiblePhotos.filter((photo) => {
                   const key = photo.relativePath || photo.name;
@@ -998,7 +982,7 @@ export default function GalleryPage() {
             </DialogHeader>
             <DialogClose className="absolute top-3 right-3 z-[10005] bg-black/80 text-white rounded-full px-2 py-1">✕</DialogClose>
             {/* Top controls row */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-3">
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-3">
               <Select onValueChange={(v) => {
                 if (v === "orig") downloadCurrent("original");
                 if (v === "4k") downloadCurrent("4k");
@@ -1007,7 +991,7 @@ export default function GalleryPage() {
                 if (v === "sm") downloadCurrent("small");
                 if (v === "webp") downloadCurrent("webp-1080");
               }}>
-                <SelectTrigger size="sm" className="w-[178px] bg-black text-white border-white/30 hover:bg-black/90 rounded-full shadow-md px-4"><SelectValue placeholder="Download" /></SelectTrigger>
+                <SelectTrigger size="sm" className="w-[178px] bg-black text-white border border-white/20 hover:bg-black rounded-full shadow-md px-4 mb-1"><SelectValue placeholder="Download" /></SelectTrigger>
                 <SelectContent className="z-[10002]">
                   <SelectItem value="orig">Original</SelectItem>
                   <SelectItem value="4k">4K (3840px)</SelectItem>
@@ -1017,12 +1001,12 @@ export default function GalleryPage() {
                   <SelectItem value="webp">WebP 1080p</SelectItem>
                 </SelectContent>
               </Select>
-              <Button size="sm" onClick={() => setShowStats((s) => !s)} aria-label="Toggle info" className="bg-black text-white border-white/30 hover:bg-black/90 rounded-full shadow-md px-3">?</Button>
+              <Button size="sm" onClick={() => setShowStats((s) => !s)} aria-label="Toggle info" className="h-8 px-3 rounded-full bg-black text-white border border-white/20 hover:bg-black shadow-md mb-1">?</Button>
             </div>
             {/* Image area with reserved top space and zoom/pan */}
             <div className="absolute inset-0 bg-black/90">
               <div
-                className="h-full w-full pt-20 flex items-center justify-center overflow-hidden"
+                className="h-full w-full py-20 flex items-center justify-center overflow-hidden"
                 onWheel={(e) => {
                   e.preventDefault();
                   const delta = -e.deltaY;
@@ -1116,7 +1100,8 @@ export default function GalleryPage() {
             <DialogTitle className="sr-only">Compare</DialogTitle>
             <DialogDescription className="sr-only">Fullscreen compare</DialogDescription>
           </DialogHeader>
-          <DialogClose className="absolute top-3 right-3 z-[10005] bg-black/80 text-white rounded-full px-2 py-1">✕</DialogClose>
+            <DialogClose className="absolute top-3 right-3 z-[10005] bg-black text-white border border-white/20 rounded-full h-8 w-8 flex items-center justify-center shadow-md">✕</DialogClose>
+            <DialogClose className="absolute top-3 right-3 z-[10005] bg-black text-white border border-white/20 rounded-full h-8 w-8 flex items-center justify-center shadow-md">✕</DialogClose>
           <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 gap-0">
             {[0,1].map((i) => (
               <div

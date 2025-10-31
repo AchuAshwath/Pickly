@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 import { Check } from "lucide-react";
 
 export default function HomePage() {
@@ -34,7 +35,9 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-3">
             <p>Sticky toolbar with recent folders, a formatted copyable selection list, and quick actions.</p>
-            <div className="aspect-video w-full rounded-md bg-muted flex items-center justify-center text-[11px] text-muted-foreground">Placeholder image</div>
+            <div className="relative aspect-video w-full rounded-md overflow-hidden">
+              <Image src="/choose folder.png" alt="Choose folder UI" fill className="object-cover" style={{ objectPosition: 'center 9px' }} priority />
+            </div>
           </CardContent>
         </Card>
         <Card className="border-0 bg-muted/20">
@@ -43,7 +46,9 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-3">
             <p>Click to highlight, tick to select. Apply ratings 0–5 and pick/reject to highlighted photos.</p>
-            <div className="aspect-video w-full rounded-md bg-muted flex items-center justify-center text-[11px] text-muted-foreground">Placeholder image</div>
+            <div className="relative aspect-video w-full rounded-md overflow-hidden">
+              <Image src="/rating and pick.png" alt="Rating and pick UI" fill className="object-cover" />
+            </div>
           </CardContent>
         </Card>
         <Card className="border-0 bg-muted/20">
@@ -52,7 +57,9 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-3">
             <p>Compare two photos side‑by‑side and copy a clean, numbered selection list.</p>
-            <div className="aspect-video w-full rounded-md bg-muted flex items-center justify-center text-[11px] text-muted-foreground">Placeholder image</div>
+            <div className="relative aspect-video w-full rounded-md overflow-hidden">
+              <Image src="/copy list.png" alt="Copy selection list" fill className="object-cover object-top" />
+            </div>
           </CardContent>
         </Card>
       </section>
@@ -66,7 +73,9 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
               <p>Files never leave your machine. Everything runs in your browser.</p>
-              <div className="aspect-[4/3] w-full rounded-md bg-muted flex items-center justify-center text-[11px] text-muted-foreground">Placeholder image</div>
+              <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden">
+                <Image src="/local.png" alt="Local-first" fill className="object-cover" />
+              </div>
             </CardContent>
           </Card>
           <Card className="border-0 bg-muted/20">
@@ -75,7 +84,9 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
               <p>Calm thumbnails, fullscreen viewer with zoom/pan, and EXIF/size stats on demand.</p>
-              <div className="aspect-[4/3] w-full rounded-md bg-muted flex items-center justify-center text-[11px] text-muted-foreground">Placeholder image</div>
+              <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden">
+                <Image src="/clean UI.png" alt="Clean viewer" fill className="object-cover" />
+              </div>
             </CardContent>
           </Card>
           <Card className="border-0 bg-muted/20">
@@ -84,7 +95,9 @@ export default function HomePage() {
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-3">
               <p>Keyboard shortcuts for quick rating/flagging and simple filters to focus on the best shots.</p>
-              <div className="aspect-[4/3] w-full rounded-md bg-muted flex items-center justify-center text-[11px] text-muted-foreground">Placeholder image</div>
+              <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden">
+                <Image src="/filters.png" alt="Shortcuts and filters" fill className="object-cover" />
+              </div>
             </CardContent>
           </Card>
         </div>
