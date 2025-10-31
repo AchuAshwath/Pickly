@@ -7,7 +7,7 @@ export default function DonatePage() {
   return (
     <div className="container mx-auto p-6 md:p-10 space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Support the project</h1>
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Support Pickly</h1>
         <p className="text-muted-foreground">If this tool helps your workflow, you can chip in to keep it going.</p>
       </div>
 
