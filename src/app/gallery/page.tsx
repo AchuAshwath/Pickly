@@ -139,7 +139,7 @@ export default function GalleryPage() {
       console.error("Download failed", e);
       toast.error("Download failed", { description: String(e) });
     }
-  }, [viewerIndex, allPhotos, downloadBlob, toast]);
+  }, [viewerIndex, allPhotos, downloadBlob]);
 
   const formatFileSize = useCallback((bytes: number) => {
     if (!Number.isFinite(bytes)) return "-";
@@ -171,6 +171,32 @@ export default function GalleryPage() {
     revokeUrls(lightboxObjectUrlsRef.current);
     lightboxObjectUrlsRef.current = [];
   }, [revokeUrls]);
+
+  // Load next page of photos (pure function over provided arrays)
+  const loadMorePhotos = useCallback((
+    currentAllPhotos: PhotoMetadata[],
+    currentVisiblePhotos: DisplayPhoto[]
+  ) => {
+    const startIndex = currentVisiblePhotos.length;
+    const endIndex = Math.min(startIndex + PHOTOS_PER_PAGE, currentAllPhotos.length);
+    if (startIndex >= currentAllPhotos.length) {
+      setHasMore(false);
+      return;
+    }
+    const nextBatchMetadata = currentAllPhotos.slice(startIndex, endIndex);
+    const newVisiblePhotos: DisplayPhoto[] = [];
+    for (const meta of nextBatchMetadata) {
+      try {
+        const objectUrl = URL.createObjectURL(meta.fileHandle);
+        visibleObjectUrlsRef.current.add(objectUrl);
+        newVisiblePhotos.push({ ...meta, objectUrl });
+      } catch (urlError) {
+        console.error(`Failed to create Object URL for ${meta.name}:`, urlError);
+      }
+    }
+    setVisiblePhotos((prev) => [...prev, ...newVisiblePhotos]);
+    setHasMore(endIndex < currentAllPhotos.length);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -334,31 +360,7 @@ export default function GalleryPage() {
     }
   }, [idbGet, loadFromDirectoryHandle, addToRecent]);
 
-  // Hoisted function to avoid temporal dead zone issues in deps
-  function loadMorePhotos(
-    currentAllPhotos: PhotoMetadata[] = allPhotos,
-    currentVisiblePhotos: DisplayPhoto[] = visiblePhotos
-  ) {
-    const startIndex = currentVisiblePhotos.length;
-    const endIndex = Math.min(startIndex + PHOTOS_PER_PAGE, currentAllPhotos.length);
-    if (startIndex >= currentAllPhotos.length) {
-      setHasMore(false);
-      return;
-    }
-    const nextBatchMetadata = currentAllPhotos.slice(startIndex, endIndex);
-    const newVisiblePhotos: DisplayPhoto[] = [];
-    for (const meta of nextBatchMetadata) {
-      try {
-        const objectUrl = URL.createObjectURL(meta.fileHandle);
-        visibleObjectUrlsRef.current.add(objectUrl);
-        newVisiblePhotos.push({ ...meta, objectUrl });
-      } catch (urlError) {
-        console.error(`Failed to create Object URL for ${meta.name}:`, urlError);
-      }
-    }
-    setVisiblePhotos((prev) => [...prev, ...newVisiblePhotos]);
-    setHasMore(endIndex < currentAllPhotos.length);
-  }
+  
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -465,27 +467,14 @@ export default function GalleryPage() {
       console.time("Lightbox URL Generation");
       revokeLightboxUrls();
       const newLightboxUrls: string[] = [];
-      const slidesData = allPhotos.map((photo) => {
+      for (const photo of allPhotos) {
         try {
           const url = URL.createObjectURL(photo.fileHandle);
           newLightboxUrls.push(url);
-          return {
-            src: url,
-            alt: photo.name,
-            title: photo.name,
-          };
         } catch (e) {
-          console.error(
-            `Failed to create Object URL for lightbox slide ${photo.name}:`,
-            e
-          );
-          return {
-            src: "",
-            alt: `Error loading ${photo.name}`,
-            title: photo.name,
-          };
+          console.error(`Failed to create Object URL for lightbox slide ${photo.name}:`, e);
         }
-      });
+      }
       console.timeEnd("Lightbox URL Generation");
 
       lightboxObjectUrlsRef.current = newLightboxUrls;
@@ -910,7 +899,7 @@ export default function GalleryPage() {
               {/* Removed duplicate inline filters; filters now live in sticky header (row 2) */}
               <InfiniteScroll
                 dataLength={visiblePhotos.length}
-                next={loadMorePhotos}
+                next={() => loadMorePhotos(allPhotos, visiblePhotos)}
                 hasMore={hasMore}
                 loader={
                   <p className="text-center col-span-full py-4">
