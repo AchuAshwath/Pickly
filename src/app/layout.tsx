@@ -28,7 +28,7 @@ export default function RootLayout({
         <ThemeProviders>
            <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
              <div className="container mx-auto p-4 flex items-center justify-between">
-               <Link href="/" className="font-semibold tracking-tight">Lazy Photo Select</Link>
+              <Link href="/" className="font-semibold tracking-tight">Pickly</Link>
                <nav className="flex items-center gap-4 text-sm">
                  <Link href="/" className="hover:underline">Home</Link>
                  <Link href="/gallery" className="hover:underline">Gallery</Link>
@@ -40,7 +40,7 @@ export default function RootLayout({
            <main className="flex-1">{children}</main>
            <footer className="border-t">
              <div className="container mx-auto py-3 px-4 text-xs text-muted-foreground flex items-center justify-between">
-               <span>© {new Date().getFullYear()} Lazy Photo Select</span>
+              <span>© {new Date().getFullYear()} Pickly</span>
                <div className="flex items-center gap-4">
                 <Link href="/donate" className="hover:underline">Support</Link>
                  <a className="hover:underline" href="https://nextjs.org" target="_blank" rel="noreferrer">Built with Next.js</a>

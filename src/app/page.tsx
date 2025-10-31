@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <div className="container mx-auto p-6 md:p-10 space-y-10">
       <section className="text-center space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Lazy Photo Select</h1>
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Pickly</h1>
         <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
           A fast, privacy‑first photo culling tool that runs 100% in your browser.
           Load from a local folder, highlight, rate, flag, compare, and copy your selections — no uploads.
@@ -161,7 +161,7 @@ export default function HomePage() {
                   <Link href="/donate?amt=10">Tip $10</Link>
                 </Button>
                 <Button className="h-8 px-4" asChild>
-                  <Link href="/donate">Support the project</Link>
+                  <Link href="/donate">Support Pickly</Link>
                 </Button>
               </div>
             </div>

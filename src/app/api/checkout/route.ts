@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'usd',
             unit_amount: 900, // $9.00 test donation
-            product_data: { name: 'Support the project' },
+            product_data: { name: 'Support Pickly' },
           },
           quantity,
         },
