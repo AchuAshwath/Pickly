@@ -120,3 +120,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Remove outline from root elements to avoid full-page focus ring */
+html:focus,
+html:focus-visible,
+body:focus,
+body:focus-visible {
+  outline: none !important;
+}
