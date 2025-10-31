@@ -1,23 +1,20 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
-import { FolderOpen, Copy, Check, ImageOff, Flag, X as XIcon, Star, HelpCircle, SlidersHorizontal, CopyCheck } from "lucide-react";
+import { FolderOpen, ImageOff, Flag, X as XIcon, Star, HelpCircle, SlidersHorizontal } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 
-import Lightbox from "yet-another-react-lightbox";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import "yet-another-react-lightbox/styles.css";
+ 
 
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 
 interface PhotoMetadata {
   name: string;
@@ -44,9 +41,6 @@ export default function GalleryPage() {
   const [hasMore, setHasMore] = useState(false);
 
   const [viewerIndex, setViewerIndex] = useState(-1);
-  const [lightboxSlides, setLightboxSlides] = useState<
-    Array<{ src: string; alt?: string; title?: string }>
-  >([]);
   const lightboxObjectUrlsRef = useRef<string[]>([]);
 
   const [photoDimensionsByPath, setPhotoDimensionsByPath] = useState<Record<string, { width: number; height: number }>>({});
@@ -316,9 +310,9 @@ export default function GalleryPage() {
 
   const handlePickPersistentFolder = useCallback(async () => {
     try {
-      // @ts-expect-error File System Access API
+      // @ts-expect-error - File System Access API not typed in all TS libs
       if (!window.showDirectoryPicker) throw new Error("Not supported by this browser");
-      // @ts-expect-error
+      // @ts-expect-error - showDirectoryPicker exists in supporting browsers
       const dirHandle = await window.showDirectoryPicker({ mode: "read" });
       await idbSet("dirHandle", dirHandle);
       setHasPersistedFolder(true);
@@ -495,7 +489,6 @@ export default function GalleryPage() {
       console.timeEnd("Lightbox URL Generation");
 
       lightboxObjectUrlsRef.current = newLightboxUrls;
-      setLightboxSlides(slidesData);
       setViewerIndex(requestedIndex);
       const p = allPhotos[requestedIndex];
       if (p) setLastActiveKey(p.relativePath || p.name);
@@ -506,7 +499,6 @@ export default function GalleryPage() {
   const handleCloseLightbox = () => {
     setViewerIndex(-1);
     revokeLightboxUrls();
-    setLightboxSlides([]);
   };
 
   useEffect(() => {
@@ -648,13 +640,7 @@ export default function GalleryPage() {
   }, [viewerIndex, allPhotos, lastActiveKey]);
 
   // Quick actions for active photo
-  const activeKey = React.useMemo(() => {
-    if (viewerIndex >= 0 && allPhotos[viewerIndex]) {
-      const p = allPhotos[viewerIndex];
-      return p.relativePath || p.name;
-    }
-    return lastActiveKey;
-  }, [viewerIndex, allPhotos, lastActiveKey]);
+  // activeKey not needed: actions target highlighted photos
 
   const setActiveRating = (value: number) => {
     if (highlightedPhotos.size === 0) return;
@@ -744,7 +730,7 @@ export default function GalleryPage() {
 
       <div className="container mx-auto p-4 md:p-5 space-y-4">
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 -mx-4 md:-mx-5 px-4 md:px-5 py-2 flex flex-col gap-2">
-          {/* Row 1 */}
+          {/* Row 2 */}
           <div className="w-full flex flex-wrap items-center justify-between gap-2">
             <div className="ml-2 flex items-center gap-2 flex-wrap">
               <Button
